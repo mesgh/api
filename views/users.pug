@@ -14,14 +14,14 @@ block content
     form.form(data-method="PUT" action="/users") 
       select(name="login")
         each user in users 
-          option(value=user.login)= user.login
+          option(value=user[_id])= user.login
       input(type="password" name="password" placeholder="Password")
       button Сменить пароль
     br
     form.form(data-method="delete" action="/users") 
       select(name="login")
         each user in users 
-          option(value=user.login)= user.login
+          option(value=user[_id])= user.login
       button Удалить
     br
   h4 Список пользователей
@@ -52,9 +52,8 @@ block script
               }
             });
             console.log(formData, form.dataset.method);
-            fetch('/users', {
-              method: form.dataset.method,
-              body: JSON.stringify(formData)
+            fetch('/users/' + JSON.stringify(formData), {
+              method: form.dataset.method
             });
           });
         }

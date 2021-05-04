@@ -26,10 +26,9 @@ const CRUD = {
     r.res.redirect('/users');
   },
   async del(r) {
-    const { body } = r;
-    console.log(body);
-    await Writer.deleteOne({ login: body.login });
-    r.res.redirect('/users');
+    console.log(r.url);
+    //await Writer.deleteOne({ login: body.login });
+    //r.res.redirect('/users');
   },
 };
 module.exports = CRUD;

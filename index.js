@@ -18,8 +18,10 @@ Router
   .route('/')
   .get(CRUD.read)
   .post(CRUD.create)
-  .delete(CRUD.del)
   .put(CRUD.update);
+  Router
+  .route('/:data')
+  .delete(CRUD.del);
 
 app
   .set('view engine', 'pug')
