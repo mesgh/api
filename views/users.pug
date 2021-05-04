@@ -1,0 +1,62 @@
+extends auth.pug 
+
+block append style
+  style.
+    td { padding: 5px; border: 1px solid #ac7}
+
+block content 
+  if admin 
+    form.form(data-method="POST" action="/users") 
+      input(type="text" name="login" placeholder="Login")
+      input(type="password" name="password" placeholder="Password")
+      button Создать
+    br
+    form.form(data-method="PUT" action="/users") 
+      select(name="login")
+        each user in users 
+          option(value=user.login)= user.login
+      input(type="password" name="password" placeholder="Password")
+      button Сменить пароль
+    br
+    form.form(data-method="delete" action="/users") 
+      select(name="login")
+        each user in users 
+          option(value=user.login)= user.login
+      button Удалить
+    br
+  h4 Список пользователей
+    table
+      tr 
+        td Логин
+        td Пароль
+      each user in users 
+        tr
+          td= user.login
+          td= user.password
+      tr
+        td Админ?
+        td= admin
+
+block script
+  script.
+    const forms = Array.from(document.querySelectorAll('.form'));
+    forms.forEach(form => {
+      Array.from(form.elements).forEach(el => {
+        if (el.tagName === 'BUTTON') {
+          el.addEventListener('click', e => {
+            e.preventDefault();
+            let formData = {};
+            Array.from(form.elements).forEach(el => {
+              if (el.tagName !== 'BUTTON') {
+                formData[el.name] = el.value;
+              }
+            });
+            console.log(formData, form.dataset.method);
+            fetch('/users', {
+              method: form.dataset.method,
+              body: JSON.stringify(formData)
+            });
+          });
+        }
+      });
+    });
