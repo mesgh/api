@@ -18,7 +18,7 @@ block content
       input(type="password" name="password" placeholder="Password")
       button Сменить пароль
     br
-    form.form(data-method="delete" action="/users") 
+    form.form(data-method="DELETE" action="/users") 
       select(name="login")
         each user in users 
           option(value=user[_id])= user.login
@@ -45,16 +45,24 @@ block script
         if (el.tagName === 'BUTTON') {
           el.addEventListener('click', e => {
             e.preventDefault();
-            let formData = {};
-            Array.from(form.elements).forEach(el => {
-              if (el.tagName !== 'BUTTON') {
-                formData[el.name] = el.value;
-              }
-            });
-            console.log(formData, form.dataset.method);
-            fetch('/users/' + JSON.stringify(formData), {
-              method: form.dataset.method
-            });
+            if (form.dataset.method === 'POST' || form.dataset.method === 'PUT') {
+              let formData = {};
+              Array.from(form.elements).forEach(el => {
+                if (el.tagName !== 'BUTTON') {
+                  formData[el.name] = el.value;
+                }
+              });
+              console.log(formData, form.dataset.method);
+              fetch('/users/', {
+                method: form.dataset.method,
+                body: formData
+              });
+            } else if (form.dataset.method === 'DELETE') {
+              const id = form.elements[0].value;
+              fetch('/users/' + id, {
+                method: form.dataset.method,
+              });
+            }
           });
         }
       });

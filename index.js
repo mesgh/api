@@ -20,7 +20,7 @@ Router
   .post(CRUD.create)
   .put(CRUD.update);
   Router
-  .route('/:data')
+  .route('/:id')
   .delete(CRUD.del);
 
 app
