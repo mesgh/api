@@ -26,9 +26,10 @@ const CRUD = {
     r.res.redirect('/users');
   },
   async del(r) {
-    console.log(r.url);
-    //await Writer.deleteOne({ login: body.login });
-    //r.res.redirect('/users');
+    const body = JSON.parse(decodeURI((r.url).slice(1)));
+    await Writer.deleteOne({ login: body.login });
+    r.res.redirect(301, '/users');
   },
 };
 module.exports = CRUD;
+// prof@univer.msk.ru
