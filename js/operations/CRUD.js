@@ -3,17 +3,22 @@ const Writer = require('../models/Writer');
 const CRUD = {
   async create(r) {
     const { body } = r;
-    const user = await Writer.findOne({ login: body.login });
-    if (user) {
-      r.res.send('Такой пользователь уже существует!');
-    } else {
-      const newUser = new Writer(body);
-      try {
-        await newUser.save();
-      } catch (err) {
-        console.error(err);
+    if (body.login) {
+      const user = await Writer.findOne({ login: body.login });
+      if (user) {
+        r.res.status(400).send('Такой пользователь уже существует!');
+      } else {
+        const newUser = new Writer(body);
+        try {
+          await newUser.save();
+        } catch (err) {
+          console.error(err);
+          r.res.status(400).send(`ERROR: ${err}!`);
+        }
+        r.res.status(200).send(`Пользователь ${body.login} создан!`);
       }
-      r.res.redirect('/users');
+    } else {
+      r.res.status(400).send('Нет логина!');
     }
   },
   async read(r) {
@@ -23,14 +28,16 @@ const CRUD = {
   async update(r) {
     const { body } = r;
     await Writer.updateOne({ login: body.login }, { $set: { password: body.password } });
-    r.res.redirect('/users');
+    r.res.status(200).send("Пароль изменён!")
   },
   async del(r) {
-    console.log(id);
-    const body = JSON.parse(decodeURI((r.url).slice(1)));
-    await Writer.deleteOne({ login: body.login });
-    r.res.redirect(301, '/users');
+    const login = r.params.login;
+    if (login !== r.session.login) {
+      await Writer.deleteOne({ login });
+      r.res.status(200).send("Пользователь удалён!");
+    } else {
+      r.res.status(400).send("Нельзя удалить свой аккаунт!");
+    }
   },
 };
 module.exports = CRUD;
-// prof@univer.msk.ru

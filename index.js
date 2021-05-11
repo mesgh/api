@@ -19,8 +19,8 @@ Router
   .get(CRUD.read)
   .post(CRUD.create)
   .put(CRUD.update);
-  Router
-  .route('/:id')
+Router
+  .route('/:login')
   .delete(CRUD.del);
 
 app

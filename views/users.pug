@@ -6,22 +6,22 @@ block append style
 
 block content 
   if admin 
-    form.form(data-method="POST" action="/users") 
+    form.form(data-method="post" action="/users") 
       input(type="text" name="login" placeholder="Login")
       input(type="password" name="password" placeholder="Password")
       button Создать
     br
-    form.form(data-method="PUT" action="/users") 
+    form.form(data-method="put" action="/users") 
       select(name="login")
         each user in users 
-          option(value=user[_id])= user.login
+          option(value=user.login)= user.login
       input(type="password" name="password" placeholder="Password")
       button Сменить пароль
     br
-    form.form(data-method="DELETE" action="/users") 
+    form.form(data-method="delete" action="/users") 
       select(name="login")
         each user in users 
-          option(value=user[_id])= user.login
+          option(value=user.login)= user.login
       button Удалить
     br
   h4 Список пользователей
@@ -43,25 +43,32 @@ block script
     forms.forEach(form => {
       Array.from(form.elements).forEach(el => {
         if (el.tagName === 'BUTTON') {
-          el.addEventListener('click', e => {
+          el.addEventListener('click', async e => {
             e.preventDefault();
-            if (form.dataset.method === 'POST' || form.dataset.method === 'PUT') {
+            let res;
+            if (form.dataset.method === 'post' || form.dataset.method === 'put') {
               let formData = {};
               Array.from(form.elements).forEach(el => {
                 if (el.tagName !== 'BUTTON') {
                   formData[el.name] = el.value;
                 }
               });
-              console.log(formData, form.dataset.method);
-              fetch('/users/', {
+              res = await fetch('/users', {
                 method: form.dataset.method,
-                body: formData
-              });
-            } else if (form.dataset.method === 'DELETE') {
-              const id = form.elements[0].value;
-              fetch('/users/' + id, {
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+              }).then(async response => { return { status: response.status, body: await response.text() } });
+            } else if (form.dataset.method === 'delete') {
+              const login = form.elements[0].value;
+              res = await fetch('/users/' + login, {
                 method: form.dataset.method,
-              });
+              }).then(async response => { return { status: response.status, body: await response.text() } });
+            }
+            await alert(res.body);
+            if (res.status === 200) {
+              location.reload();
             }
           });
         }
